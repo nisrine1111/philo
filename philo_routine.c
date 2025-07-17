@@ -15,6 +15,7 @@
 static void	eat_routine_helper(t_philo *philo)
 {
 	print_status(philo, "has taken a fork");
+	printf("%d\n", philo->data->over);
 	print_status(philo, "is eating");
 	pthread_mutex_lock(&philo->data->meal_mutex);
 	philo->last_meal_time = current_time();

@@ -23,8 +23,11 @@ long long	current_time(void)
 void	print_status(t_philo *philo, char *msg)
 {
 	if (!philo->data->over)
+	{
+		// printf("whyyyyyyyyyyyyyyyyyyyyyyyy\n");
 		printf("%lld ms %d %s\n",
 			current_time() - philo->thread_start, philo->id, msg);
+	}
 }
 
 void	print_d(void)

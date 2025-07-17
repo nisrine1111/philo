@@ -44,8 +44,10 @@ int	start_simulation(t_data *data, t_philo *philo)
 static int	death_check(t_data *data, t_philo *philo, int *i)
 {
 	print_status(&philo[*i], "died!");
-	print_d();
 	data->over = 1;
+	// print_d();
+	printf("%d\n", philo->data->over);
+	printf("ooooooooooooooooooooooooooooooooooooooooo\n");
 	pthread_mutex_unlock(&data->meal_mutex);
 	return (1);
 }
@@ -53,8 +55,10 @@ static int	death_check(t_data *data, t_philo *philo, int *i)
 static int	surviving_check(t_data *data, t_philo *philo)
 {
 	data->over = 1;
+	printf("yessssssssssssssssssssssssssssssssssssssssssssssssssssssssss\n");
 	printf("All philos have eaten %d meals!\n", philo->data->number_of_meals);
 	printf("THANK GOD, everyone is alive :)\n");
+	pthread_mutex_unlock(&data->meal_mutex);
 	return (1);
 }
 
