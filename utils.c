@@ -35,6 +35,12 @@ int	init_mutexes(t_data *data)
 	}
 	if (pthread_mutex_init(&data->meal_mutex, NULL) != 0)
 		return (0);
+	if (pthread_mutex_init(&data->over_mutex, NULL) != 0)
+		return (0);
+	if (pthread_mutex_init(&data->print_mutex, NULL) != 0)
+		return (0);
+	if (pthread_mutex_init(&data->ready_mutex, NULL) != 0)
+		return (0);
 	return (1);
 }
 

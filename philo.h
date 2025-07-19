@@ -32,6 +32,9 @@ typedef struct s_data
 	int				over;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	meal_mutex;
+	pthread_mutex_t	over_mutex;
+	pthread_mutex_t	ready_mutex;
+	pthread_mutex_t	print_mutex;
 }	t_data;
 
 typedef struct s_philo
@@ -65,7 +68,8 @@ int			destroy_mutexes(t_data *data, t_philo *philo, pthread_t *monitor);
 void		*ft_philo_routine(void *param);
 void		*monitor_thread(void *arg);
 void		print_status(t_philo *philo, char *msg);
-void		print_d(void);
+int			is_over(t_philo *philo);
+int			is_ready(t_philo *philo);
 long long	ft_atoi(const char *str);
 long long	current_time(void);
 #endif

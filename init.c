@@ -37,28 +37,28 @@ int	start_simulation(t_data *data, t_philo *philo)
 		philo[i].last_meal_time = data->start_time;
 		i++;
 	}
+	pthread_mutex_lock(&philo->data->ready_mutex);
 	data->ready = 1;
+	pthread_mutex_unlock(&philo->data->ready_mutex);
 	return (1);
 }
 
 static int	death_check(t_data *data, t_philo *philo, int *i)
 {
-	print_status(&philo[*i], "died!");
-	data->over = 1;
-	// print_d();
-	printf("%d\n", philo->data->over);
-	printf("ooooooooooooooooooooooooooooooooooooooooo\n");
 	pthread_mutex_unlock(&data->meal_mutex);
+	print_status(&philo[*i], "died");
+	pthread_mutex_lock(&data->over_mutex);
+	data->over = 1;
+	pthread_mutex_unlock(&data->over_mutex);
 	return (1);
 }
 
-static int	surviving_check(t_data *data, t_philo *philo)
+static int	surviving_check(t_data *data)
 {
-	data->over = 1;
-	printf("yessssssssssssssssssssssssssssssssssssssssssssssssssssssssss\n");
-	printf("All philos have eaten %d meals!\n", philo->data->number_of_meals);
-	printf("THANK GOD, everyone is alive :)\n");
 	pthread_mutex_unlock(&data->meal_mutex);
+	pthread_mutex_lock(&data->over_mutex);
+	data->over = 1;
+	pthread_mutex_unlock(&data->over_mutex);
 	return (1);
 }
 
@@ -67,9 +67,9 @@ int	simulation_monitor(t_data *data, t_philo *philo)
 	int	i;
 	int	all_ate;
 
-	while (!data->ready)
+	while (!is_ready(philo))
 		usleep(100);
-	while (!data->over)
+	while (!is_over(philo))
 	{
 		i = 0;
 		all_ate = 1;
@@ -82,7 +82,7 @@ int	simulation_monitor(t_data *data, t_philo *philo)
 				&& philo[i].meals_eaten < data->number_of_meals)
 				all_ate = 0;
 			if (data->meal_check != 0 && all_ate)
-				return (surviving_check(data, philo));
+				return (surviving_check(data));
 			pthread_mutex_unlock(&data->meal_mutex);
 			i++;
 		}

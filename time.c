@@ -22,25 +22,35 @@ long long	current_time(void)
 
 void	print_status(t_philo *philo, char *msg)
 {
-	if (!philo->data->over)
-	{
-		// printf("whyyyyyyyyyyyyyyyyyyyyyyyy\n");
-		printf("%lld ms %d %s\n",
+	pthread_mutex_lock(&philo->data->print_mutex);
+	pthread_mutex_lock(&philo->data->meal_mutex);
+	if (!is_over(philo))
+		printf("%lld %d %s\n",
 			current_time() - philo->thread_start, philo->id, msg);
-	}
+	pthread_mutex_unlock(&philo->data->print_mutex);
+	pthread_mutex_unlock(&philo->data->meal_mutex);
 }
 
-void	print_d(void)
+int	is_over(t_philo *philo)
 {
-	printf("\033[0;31m");
-	printf("      _____\n");
-	printf("     /     \\\n");
-	printf("    | () () |\n");
-	printf("    |  ___  |\n");
-	printf("     \\_____/\n");
-	printf("    ___|_|___\n");
-	printf("   /         \\\n");
-	printf("  |  RIP 💀   |\n");
-	printf("  |___________|\n");
-	printf("\033[0m");
+	pthread_mutex_lock(&philo->data->over_mutex);
+	if (philo->data->over)
+	{
+		pthread_mutex_unlock(&philo->data->over_mutex);
+		return (1);
+	}
+	pthread_mutex_unlock(&philo->data->over_mutex);
+	return (0);
+}
+
+int	is_ready(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->data->ready_mutex);
+	if (philo->data->ready)
+	{
+		pthread_mutex_unlock(&philo->data->ready_mutex);
+		return (1);
+	}
+	pthread_mutex_unlock(&philo->data->ready_mutex);
+	return (0);
 }

@@ -31,6 +31,7 @@ static int	run_simulation(
 		return (ft_print_error("creating monitor thread failed"));
 	if (!destroy_mutexes(data, philos, &monitor))
 		return (ft_print_error("joining failed!"));
+	free(args);
 	return (0);
 }
 

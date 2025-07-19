@@ -15,7 +15,6 @@
 static void	eat_routine_helper(t_philo *philo)
 {
 	print_status(philo, "has taken a fork");
-	printf("%d\n", philo->data->over);
 	print_status(philo, "is eating");
 	pthread_mutex_lock(&philo->data->meal_mutex);
 	philo->last_meal_time = current_time();
@@ -28,10 +27,10 @@ static void	eat_routine_helper(t_philo *philo)
 
 static void	eat_routine(t_philo *philo)
 {
-	if (philo->data->over)
+	if (is_over(philo))
 		return ;
 	pthread_mutex_lock(philo->left_fork);
-	if (philo->data->over)
+	if (is_over(philo))
 	{
 		pthread_mutex_unlock(philo->left_fork);
 		return ;
@@ -40,10 +39,11 @@ static void	eat_routine(t_philo *philo)
 	if (philo->data->number_of_philosophers == 1)
 	{
 		ft_usleep(philo->data->time_to_die, philo);
+		pthread_mutex_unlock(philo->right_fork);
 		return ;
 	}
 	pthread_mutex_lock(philo->right_fork);
-	if (philo->data->over)
+	if (is_over(philo))
 	{
 		pthread_mutex_unlock(philo->right_fork);
 		pthread_mutex_unlock(philo->left_fork);
@@ -54,11 +54,11 @@ static void	eat_routine(t_philo *philo)
 
 static void	think_sleep_routine(t_philo *philo)
 {
-	if (philo->data->over)
+	if (is_over(philo))
 		return ;
 	print_status(philo, "is sleeping");
 	ft_usleep(philo->data->time_to_sleep, philo);
-	if (philo->data->over)
+	if (is_over(philo))
 		return ;
 	print_status(philo, "is thinking");
 }
@@ -68,7 +68,7 @@ int	ft_usleep(long long time, t_philo *philo)
 	long long	now;
 
 	now = current_time();
-	while (!philo->data->over && (current_time() - now) < time)
+	while (!is_over(philo) && (current_time() - now) < time)
 		usleep(150);
 	return (1);
 }
@@ -78,15 +78,15 @@ void	*ft_philo_routine(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
-	while (!philo->data->ready)
+	while (!is_ready(philo))
 		usleep(100);
 	if (philo->id & 1)
 		ft_usleep(50, philo);
-	while (!philo->data->over)
+	while (!is_over(philo))
 	{
-		if (!philo->data->over)
+		if (!is_over(philo))
 			eat_routine(philo);
-		if (!philo->data->over)
+		if (!is_over(philo))
 			think_sleep_routine(philo);
 	}
 	return (NULL);
